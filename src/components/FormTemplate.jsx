@@ -1,21 +1,21 @@
 import React from "react";
 
-const FormTemplate = ({ setForm, options, name, initialValue }) => {
+const FormTemplate = ({ setForm, options, initialValue }) => {
   const [value, setValue] = React.useState(initialValue || "");
 
   const handleValueChange = (e) => {
     setValue(e.target.value);
-    setForm((prev) => ({ ...prev, [name]: e.target.value }));
+    setForm((prev) => ({ ...prev, plantilla: e.target.value }));
   };
 
   return (
     <div>
-      <h2>Seleccione una {name}:</h2>
+      <h2>Seleccione una plantilla:</h2>
       {options.map((option) => (
         <div key={option}>
           <input
             type="radio"
-            name={name}
+            name="plantilla"
             value={option}
             checked={value === option}
             onChange={handleValueChange}

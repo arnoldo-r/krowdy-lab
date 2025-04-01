@@ -1,6 +1,6 @@
 import React from "react";
 
-const ChannelSelection = ({ setForm, options, name, initialValue }) => {
+const ChannelSelection = ({ setForm, options, initialValue }) => {
   const [selections, setSelections] = React.useState(initialValue || []);
 
   const handleSeleccionChange = (e) => {
@@ -12,9 +12,9 @@ const ChannelSelection = ({ setForm, options, name, initialValue }) => {
     }
     setForm((prev) => ({
       ...prev,
-      [name]: isChecked
-        ? [...(prev[name] || []), e.target.value]
-        : (prev[name] || []).filter((item) => item !== e.target.value),
+      canal: isChecked
+        ? [...(prev.canal || []), e.target.value]
+        : (prev.canal || []).filter((item) => item !== e.target.value),
     }));
   };
 
@@ -25,7 +25,7 @@ const ChannelSelection = ({ setForm, options, name, initialValue }) => {
         <div key={option}>
           <input
             type="checkbox"
-            name={name}
+            name="canal"
             value={option}
             checked={selections.includes(option)}
             onChange={handleSeleccionChange}

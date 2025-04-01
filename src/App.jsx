@@ -6,7 +6,7 @@ import EmailMessage from "./components/EmailMessage";
 import WhatsappMessage from "./components/WhatsappMessage";
 
 function App() {
-  const [formulario, setFormulario] = useState({
+  const [form, setForm] = useState({
     plantilla: "",
     canal: [],
     smsMessage: "",
@@ -18,14 +18,20 @@ function App() {
 
   const templates = {
     invitado: {
-      sms: "Invitación",
-      email: { subject: "Invitación", message: "Usted ha sido invitado" },
-      whatsapp: "Invitación",
+      sms: "Invitación para [user] a una entrevista",
+      email: {
+        subject: "Invitación",
+        message: "[user] ha sido invitado a una entrevista",
+      },
+      whatsapp: "Invitación para [user] a una entrevista",
     },
     recordatorio: {
-      sms: "Recordatorio",
-      email: { subject: "Recordatorio", message: "Recuerde su cita" },
-      whatsapp: "Recordatorio",
+      sms: "Recordatorio para [user]",
+      email: {
+        subject: "Recordatorio",
+        message: "[user] recuerde su entrevista",
+      },
+      whatsapp: "Recordatorio para [user]",
     },
     personalizado: {
       sms: "",
@@ -36,28 +42,26 @@ function App() {
 
   const etapas = [
     <FormTemplate
-      setForm={setFormulario}
+      setForm={setForm}
       options={["invitado", "recordatorio", "personalizado"]}
-      name="plantilla"
-      initialValue={formulario.plantilla}
+      initialValue={form.plantilla}
     />,
     <ChannelSelection
-      setForm={setFormulario}
+      setForm={setForm}
       options={["sms", "correo", "whatsapp"]}
-      name="canal"
-      initialValue={formulario.canal}
+      initialValue={form.canal}
     />,
   ];
 
-  const canales = formulario.canal;
+  const canales = form.canal;
 
   if (canales.includes("sms")) {
     etapas.push(
       <SmsMessage
         setMessage={(message) =>
-          setFormulario((prev) => ({ ...prev, smsMessage: message }))
+          setForm((prev) => ({ ...prev, smsMessage: message }))
         }
-        template={templates[formulario.plantilla].sms}
+        template={templates[form.plantilla].sms}
       />
     );
   }
@@ -66,13 +70,13 @@ function App() {
     etapas.push(
       <EmailMessage
         setSubject={(subject) =>
-          setFormulario((prev) => ({ ...prev, emailSubject: subject }))
+          setForm((prev) => ({ ...prev, emailSubject: subject }))
         }
         setMessage={(message) =>
-          setFormulario((prev) => ({ ...prev, emailMessage: message }))
+          setForm((prev) => ({ ...prev, emailMessage: message }))
         }
-        templateSubject={templates[formulario.plantilla].email.subject}
-        templateMessage={templates[formulario.plantilla].email.message}
+        templateSubject={templates[form.plantilla].email.subject}
+        templateMessage={templates[form.plantilla].email.message}
       />
     );
   }
@@ -81,9 +85,9 @@ function App() {
     etapas.push(
       <WhatsappMessage
         setMessage={(message) =>
-          setFormulario((prev) => ({ ...prev, whatsappMessage: message }))
+          setForm((prev) => ({ ...prev, whatsappMessage: message }))
         }
-        template={templates[formulario.plantilla].whatsapp}
+        template={templates[form.plantilla].whatsapp}
       />
     );
   }
@@ -91,9 +95,11 @@ function App() {
   const handleSiguiente = () => {
     if (etapaActual < etapas.length - 1) {
       setEtapaActual((prev) => prev + 1);
-    } else {
-      console.log("Formulario completo:", formulario);
     }
+  };
+
+  const handleEnviar = () => {
+    console.log(form);
   };
 
   const handleAtras = () => {
@@ -103,7 +109,7 @@ function App() {
   };
 
   const handleCancelar = () => {
-    setFormulario({
+    setForm({
       plantilla: "",
       canal: [],
       smsMessage: "",
@@ -117,30 +123,29 @@ function App() {
   return (
     <div>
       {etapas[etapaActual]}
-      <div style={{ marginTop: "20px" }}>
+      <div>
         {etapaActual === 0 ? (
           <button onClick={handleCancelar}>Cancelar</button>
         ) : (
           <button onClick={handleAtras}>Atrás</button>
         )}
-        {etapaActual === etapas.length - 1 ? (
-          <button onClick={handleSiguiente}>Enviar</button>
+        {etapaActual === etapas.length - 1 && etapaActual !== 1 ? (
+          <button onClick={handleEnviar}>Enviar</button>
         ) : (
           <button
             onClick={handleSiguiente}
             disabled={
-              (etapaActual === 0 && !formulario.plantilla) ||
-              (etapaActual === 1 &&
-                (!formulario.canal || formulario.canal.length === 0)) ||
+              (etapaActual === 0 && !form.plantilla) ||
+              (etapaActual === 1 && (!form.canal || form.canal.length === 0)) ||
               (etapaActual === 2 &&
-                formulario.canal.includes("sms") &&
-                !formulario.smsMessage) ||
+                form.canal.includes("sms") &&
+                !form.smsMessage) ||
               (etapaActual === 3 &&
-                formulario.canal.includes("correo") &&
-                (!formulario.emailSubject || !formulario.emailMessage)) ||
+                form.canal.includes("correo") &&
+                (!form.emailSubject || !form.emailMessage)) ||
               (etapaActual === 4 &&
-                formulario.canal.includes("whatsapp") &&
-                !formulario.whatsappMessage)
+                form.canal.includes("whatsapp") &&
+                !form.whatsappMessage)
             }
           >
             Siguiente
